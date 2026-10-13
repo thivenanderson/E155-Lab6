@@ -76,6 +76,10 @@ int main(void) {
 
   // SPI initialization code
   initSPI(4, 0, 1);
+
+  volatile uint8_t received = spiSendReceive(0xA5);
+
+  while (1);
   initDS1722();
   uint8_t resolution = 12;
 

@@ -10,21 +10,27 @@
 void initSPI(int br, int cpol, int cpha) {
     RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 
-    // Configure pin modes as ALT function
-    pinMode(PA4, GPIO_OUTPUT); // CE
-    pinMode(PA5, GPIO_ALT); // SCK
-    pinMode(PA6, GPIO_ALT); // MISO
-    pinMode(PA7, GPIO_ALT); // MOSI
+    // Enable GPIO clocks
+    gpioEnable(GPIO_PORT_A);
+    gpioEnable(GPIO_PORT_B);
 
-    digitalWrite(PA4, PIO_LOW); // Disable DS1722
+    // Configure SPI pins
+    pinMode(PB6, GPIO_OUTPUT); // CE
+    pinMode(PA5, GPIO_ALT);    // SCK
+    pinMode(PA6, GPIO_ALT);    // MISO
+    pinMode(PB5, GPIO_ALT);    // MOSI
 
-    // Configure correct alternate functions
+    digitalWrite(PB6, PIO_LOW);
+
+    // Set AF5 for SPI1
     GPIOA->AFR[0] &= ~((0xF << GPIO_AFRL_AFSEL5_Pos)
-                       |(0xF << GPIO_AFRL_AFSEL6_Pos)
-                       |(0xF << GPIO_AFRL_AFSEL7_Pos));   
+                      | (0xF << GPIO_AFRL_AFSEL6_Pos));
+
     GPIOA->AFR[0] |= ((0b0101 << GPIO_AFRL_AFSEL5_Pos)
-                       |(0b0101 << GPIO_AFRL_AFSEL6_Pos) 
-                       |(0b0101 << GPIO_AFRL_AFSEL7_Pos)); 
+                      | (0b0101 << GPIO_AFRL_AFSEL6_Pos));
+
+    GPIOB->AFR[0] &= ~(0xF << GPIO_AFRL_AFSEL5_Pos);
+    GPIOB->AFR[0] |= (0b0101 << GPIO_AFRL_AFSEL5_Pos);
 
     // Configure SPI1 as master with software NSS
     SPI1->CR1 = SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI
