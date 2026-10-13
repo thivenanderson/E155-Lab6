@@ -77,9 +77,15 @@ int main(void) {
   // SPI initialization code
   initSPI(4, 0, 1);
 
-  volatile uint8_t received = spiSendReceive(0xA5);
+  volatile uint8_t received;
 
-  while (1);
+  
+  while (1) {
+      received = (uint8_t)spiSendReceive(0xA5);
+
+      // Temporary delay between transfers
+      for (volatile int i = 0; i < 100000; i++);
+  }
   initDS1722();
   uint8_t resolution = 12;
 
