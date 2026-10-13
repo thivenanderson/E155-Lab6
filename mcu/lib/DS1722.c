@@ -14,7 +14,7 @@
 void setDS1722Resolution(uint8_t resolution) {
     if (resolution < 8 || resolution > 12) return;
 
-    uint8_t config = (resolution - 8) << 1;
+    uint8_t config = (resolution - 8) << 1; //define register value based on res
 
     digitalWrite(DS1722_CE, PIO_HIGH); //active high
     //multiple byte burst transfer to address of config reg to set resolution
