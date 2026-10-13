@@ -63,8 +63,13 @@
         Name="Common"
         c_user_include_directories="$(ProjectDir)/../src;$(ProjectDir)/../lib"
         filter="c;cpp;cxx;cc;h;s;asm;inc" />
-      <file file_name="../lib/DS1722.c" />
-      <file file_name="../lib/DS1722.h" />
+      <file file_name="../src/ds1722.c" />
+      <file file_name="../lib/DS1722.c">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
+      <file file_name="../lib/DS1722.h">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
       <file file_name="../src/main.c" />
       <file file_name="../src/main.h" />
       <file file_name="../lib/STM32L432KC.h" />
