@@ -100,14 +100,14 @@ int main(void) {
   //while (1);
 
   // Temporary temperature read test
-  volatile float temperature;
+//volatile float temperature;
 
-  while (1) {
-      temperature = readDS1722Temp();
+//while (1) {
+//    temperature = readDS1722Temp();
 
-      // Small delay between reads
-      for (volatile int i = 0; i < 500000; i++);
-  }
+//    // Small delay between reads
+//    for (volatile int i = 0; i < 500000; i++);
+//}
 
 
   uint8_t resolution = 12;
@@ -142,7 +142,19 @@ int main(void) {
     float temperature = readDS1722Temp();
 
     char tempStr[32];
-    sprintf(tempStr, "%.2f C", temperature);
+    //display temp
+    int temp100 = (int)(temperature * 100.0f +
+                        (temperature >= 0 ? 0.5f : -0.5f));
+
+    int mag = abs(temp100);
+    int whole = mag / 100;
+    int decimal1 = (mag % 100) / 10;
+    int decimal2 = mag % 10;
+
+    if (temp100 < 0)
+        sprintf(tempStr, "-%d.%d%d C", whole, decimal1, decimal2);
+    else
+        sprintf(tempStr, "%d.%d%d C", whole, decimal1, decimal2);
     // Update string with current LED state
   
     int led_status = updateLEDStatus(request);
