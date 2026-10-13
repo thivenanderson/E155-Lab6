@@ -15,12 +15,12 @@ void initSPI(int br, int cpol, int cpha) {
     gpioEnable(GPIO_PORT_B);
 
     // Configure SPI pins
-    pinMode(PB6, GPIO_OUTPUT); // CE
+    pinMode(PB0, GPIO_OUTPUT); // CE
     pinMode(PA5, GPIO_ALT);    // SCK
     pinMode(PA6, GPIO_ALT);    // MISO
     pinMode(PB5, GPIO_ALT);    // MOSI
 
-    digitalWrite(PB6, PIO_LOW);
+    digitalWrite(PB0, PIO_LOW);
 
     // Set AF5 for SPI1
     GPIOA->AFR[0] &= ~((0xF << GPIO_AFRL_AFSEL5_Pos)

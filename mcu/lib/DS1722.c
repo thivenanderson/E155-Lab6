@@ -7,7 +7,7 @@
 #include "STM32L432KC.h"
 #include "DS1722.h"
 
-#define DS1722_CE PB6
+#define DS1722_CE PB0
 #define DS1722_CONFIG 0x80
 #define DS1722_TEMP_LSB 0x01
 

@@ -77,16 +77,39 @@ int main(void) {
   // SPI initialization code
   initSPI(4, 0, 1);
 
-  volatile uint8_t received;
+  ////Temporary SPI loopback test
+  //volatile uint8_t received;
 
-  
-  while (1) {
-      received = (uint8_t)spiSendReceive(0xA5);
+  //while (1) {
+  //    received = (uint8_t)spiSendReceive(0xA5);
 
-      // Temporary delay between transfers
-      for (volatile int i = 0; i < 100000; i++);
-  }
+  //    // Temporary delay between transfers
+  //    for (volatile int i = 0; i < 100000; i++);
+  //}
+
   initDS1722();
+
+  //// Temporary DS1722 configuration read test
+  //digitalWrite(PB0, PIO_HIGH);
+
+  //spiSendReceive(0x00); // Read configuration register
+  //volatile uint8_t config_read = (uint8_t)spiSendReceive(0x00);
+
+  //while (SPI1->SR & SPI_SR_BSY);
+  //digitalWrite(PB0, PIO_LOW);
+  //while (1);
+
+  // Temporary temperature read test
+  volatile float temperature;
+
+  while (1) {
+      temperature = readDS1722Temp();
+
+      // Small delay between reads
+      for (volatile int i = 0; i < 500000; i++);
+  }
+
+
   uint8_t resolution = 12;
 
   while(1) {
