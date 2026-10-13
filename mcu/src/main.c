@@ -1,8 +1,8 @@
 /*
-File: Lab_6_JHB.c
-Author: Josh Brake
-Email: jbrake@hmc.edu
-Date: 9/14/19
+File: Lab6.c
+Author: Thiven Anderson
+Email: thanderson@hmc.edu
+Date: 10/12/2026
 */
 
 
@@ -10,6 +10,7 @@ Date: 9/14/19
 #include <stdlib.h>
 #include <stdio.h>
 #include "main.h"
+#include "DS1722.h"
 
 /////////////////////////////////////////////////////////////////
 // Provided Constants and Functions
@@ -22,6 +23,13 @@ char* webpageStart = "<!DOCTYPE html><html><head><title>E155 Web Server Demo Web
 	<body><h1>E155 Web Server Demo Webpage</h1>";
 char* ledStr = "<p>LED Control:</p><form action=\"ledon\"><input type=\"submit\" value=\"Turn the LED on!\"></form>\
 	<form action=\"ledoff\"><input type=\"submit\" value=\"Turn the LED off!\"></form>";
+char* resStr = "<h2>Temperature Resolution</h2>\
+    <form action=\"res8\"><button>8-bit</button></form>\
+    <form action=\"res9\"><button>9-bit</button></form>\
+    <form action=\"res10\"><button>10-bit</button></form>\
+    <form action=\"res11\"><button>11-bit</button></form>\
+    <form action=\"res12\"><button>12-bit</button></form>";
+        
 char* webpageEnd   = "</body></html>";
 
 //determines whether a given character sequence is in a char array request, returning 1 if present, -1 if not present
@@ -32,7 +40,7 @@ int inString(char request[], char des[]) {
 
 int updateLEDStatus(char request[])
 {
-	int led_status = 0;
+	static int led_status = 0;
 	// The request has been received. now process to determine whether to turn the LED on or off
 	if (inString(request, "ledoff")==1) {
 		digitalWrite(LED_PIN, PIO_LOW);
@@ -59,13 +67,17 @@ int main(void) {
   gpioEnable(GPIO_PORT_C);
 
   pinMode(PB3, GPIO_OUTPUT);
+  digitalWrite(LED_PIN, PIO_LOW); //start led low
   
   RCC->APB2ENR |= (RCC_APB2ENR_TIM15EN);
   initTIM(TIM15);
   
   USART_TypeDef * USART = initUSART(USART1_ID, 125000);
 
-  // TODO: Add SPI initialization code
+  // SPI initialization code
+  initSPI(4, 0, 1);
+  initDS1722();
+  uint8_t resolution = 12;
 
   while(1) {
     /* Wait for ESP8266 to send a request.
@@ -83,9 +95,21 @@ int main(void) {
       while(!(USART->ISR & USART_ISR_RXNE));
       request[charIndex++] = readChar(USART);
     }
+    // Check for resolution change request
+    if (strncmp(request, "/REQ:res", 8) == 0) {
+        int newResolution = atoi(request + 8);
 
-    // TODO: Add SPI code here for reading temperature
-  
+        if (newResolution >= 8 && newResolution <= 12) {
+            setDS1722Resolution((uint8_t)newResolution);
+            resolution = (uint8_t)newResolution;
+        }
+    }
+    // SPI code for reading temperature
+    
+    float temperature = readDS1722Temp();
+
+    char tempStr[32];
+    sprintf(tempStr, "%.2f C", temperature);
     // Update string with current LED state
   
     int led_status = updateLEDStatus(request);
@@ -106,8 +130,19 @@ int main(void) {
     sendString(USART, "<p>");
     sendString(USART, ledStatusStr);
     sendString(USART, "</p>");
+    //temp read and res control
+    sendString(USART, "<h2>Temperature</h2>");
 
-  
+    sendString(USART, "<p>");
+    sendString(USART, tempStr);
+    sendString(USART, "</p>");
+
+    // Resolution controls and current setting
+    sendString(USART, resStr);
+
+    char resStatusStr[40];
+    sprintf(resStatusStr, "<p>Current resolution: %d-bit</p>", resolution);
+    sendString(USART, resStatusStr);
     sendString(USART, webpageEnd);
   }
 }

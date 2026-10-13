@@ -9,7 +9,6 @@
 
 void initSPI(int br, int cpol, int cpha) {
     RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
-    RCC->CCIPR |= (0b10 << RCC_CCIPR_USART2SEL_Pos); // Set HSI16 (16 MHz) as USART clock source
 
     // Configure pin modes as ALT function
     pinMode(PA4, GPIO_OUTPUT); // CE
